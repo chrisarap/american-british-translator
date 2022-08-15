@@ -10,8 +10,6 @@ module.exports = function (app) {
     .post((req, res) => {
       let { text, locale } = req.body;
 
-      console.log(locale)
-
       return res.send(translator.checkFields(text, locale));
     });
 };

@@ -8,7 +8,9 @@ class Translator {
   checkFields(text, locale) {
     let result = {};
 
-    if (text == '') {
+    if (text == undefined || locale == undefined) {
+      result.error = 'Required field(s) missing';
+    } else if (text == '') {
       result.error = 'No text to translate';
     } else if (locale != 'american-to-british' || locale != 'british-to-american') {
       result.error = 'Invalid value for locale field';
