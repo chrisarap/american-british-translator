@@ -5,6 +5,19 @@ const britishOnly = require('./british-only.js')
 
 class Translator {
 
+  checkFields(text, locale) {
+    let result = {};
+
+    if (text == '') {
+      result.error = 'No text to translate';
+    } else if (locale != 'american-to-british' || locale != 'british-to-american') {
+      result.error = 'Invalid value for locale field';
+    }
+
+    return result;
+  }
+
+
 }
 
 module.exports = Translator;
