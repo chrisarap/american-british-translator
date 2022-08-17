@@ -22,67 +22,80 @@ class Translator {
   checkTranslate(text, locale) {
     let original = text.slice();
 
-    for (let key in americanToBritishTitles) {
-      let capitalKey = key.slice(1, key.length).split('');
-      let capitalLetter = key[0].toUpperCase();
-
-      let capitalValue = americanToBritishTitles[key].slice(1, americanToBritishTitles[key].length).split('');
-      let capitalLetterValue = americanToBritishTitles[key][0].toUpperCase();
-
-      capitalKey.unshift(capitalLetter);
-      capitalValue.unshift(capitalLetterValue);
-
-      capitalKey = capitalKey.join('');
-      capitalValue = capitalValue.join('')
-
-      americanToBritishTitles[capitalKey] = capitalValue;
-    }
-
-    console.log(americanToBritishTitles);
+    console.log('test ', text, locale);
 
     if (locale == 'american-to-british') {
+
+      if (/\d\d*\:\d\d*/.test(text)) {
+        let hour = text.match(/\d\d*\:\d\d*/).join('');
+        console.log('hey', hour);
+        let newHour = hour.replace(':', '.');
+        text = text.replace(hour, `<span class="highlight">${newHour}</span>`)
+      }
+
+      // normal translation
       for (let key in americanOnly) {
-        text = text.replace(key, americanOnly[key]);
+        text = text.replace(key, `<span class="highlight">${americanOnly[key]}</span>`);
       }
 
+      // spelling translation
       for (let key in americanToBritishSpelling) {
-        text = text.replace(key, americanToBritishSpelling[key]);
+        text = text.replace(key, `<span class="highlight">${americanToBritishSpelling[key]}</span>`);
       }
 
+      // tittle translation
       for (let key in americanToBritishTitles) {
-        text = text.replace(key, americanToBritishTitles[key]);
+        let value = americanToBritishTitles[key];
+
+        let splitText = text.slice().split(' ');
+
+        if(splitText.indexOf(key) >= 0) {
+          text = text.replace(key, `<span class="highlight">${this.parseFirstLetter(value)}</span>`);
+        } else if (splitText.indexOf(this.parseFirstLetter(key)) >= 0) {
+          text = text.replace(this.parseFirstLetter(key), `<span class="highlight">${this.parseFirstLetter(value)}</span>`);
+        }
       }
 
     } else {
+      // british to american
+
+      // normal translation
       for (let key in britishOnly) {
-        text = text.replace(key, britishOnly[key]);
+        text = text.replace(key, `<span class="highlight">${britishOnly[key]}</span>`);
       }
 
+      // spelling translation
       for (let key in americanToBritishSpelling) {
-        text = text.replace(americanToBritishSpelling[key], key);
+        text = text.replace(americanToBritishSpelling[key], `<span class="highlight">${key}</span>`);
       }
 
-      for (let key in americanToBritishTitles) {
-        let capitalWord = key.slice(1, key.length).split('');
-        let capitalLetter = key[0].toUpperCase();
-        capitalWord.unshift(capitalLetter);
-        capitalWord = capitalWord.join('');
+      // tittle translation
+      for (let value in americanToBritishTitles) {
+        let key = americanToBritishTitles[value];
 
-        if (key != capitalWord) {
-          text = text.replace(americanToBritishTitles[key], capitalWord);
-        }        
+        let splitText = text.slice().split(' ');
+        splitText = text.slice().split('.');
 
-        console.log(text, key, americanToBritishTitles[key], '-',capitalWord);
-        console.log('\n');
-        console.log(americanToBritishTitles);
-        console.log('\n\n\n\n');
+        if(splitText.indexOf(key) >= 0) {
+          text = text.replace(key, `<span class="highlight">${this.parseFirstLetter(value)}</span>`);
+        } else if (splitText.indexOf(this.parseFirstLetter(key)) >= 0) {
+          text = text.replace(this.parseFirstLetter(key), `<span class="highlight">${this.parseFirstLetter(value)}</span>`);
+        }
       }
     }
 
-    return text != original ? {translation: text} :{translation: 'Everything looks good to me!'};
+
+
+    return text != original ? {text: original, translation: text} :{text: original, translation: 'Everything looks good to me!'};
   }
 
+  parseFirstLetter(word) {
+    word = word.toLowerCase();
+    let firstLetter = word[0].toUpperCase();
+    let letters = word.slice(1, word.length);
 
+    return firstLetter + letters
+  }
 }
 
 module.exports = Translator;
