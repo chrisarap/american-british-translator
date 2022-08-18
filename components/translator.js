@@ -21,21 +21,18 @@ class Translator {
 
   checkTranslate(text, locale) {
     let original = text.slice();
-
-    console.log('test ', text, locale);
+    let regex = myVar => new RegExp("\\b[^-]"+ myVar +"\\b", 'gi');
 
     if (locale == 'american-to-british') {
-
       if (/\d\d*\:\d\d*/.test(text)) {
         let hour = text.match(/\d\d*\:\d\d*/).join('');
-        console.log('hey', hour);
         let newHour = hour.replace(':', '.');
         text = text.replace(hour, `<span class="highlight">${newHour}</span>`)
       }
 
       // normal translation
       for (let key in americanOnly) {
-        text = text.replace(key, `<span class="highlight">${americanOnly[key]}</span>`);
+        text = text.replace(regex(key), ` <span class="highlight">${americanOnly[key]}</span>`);
       }
 
       // spelling translation
@@ -55,13 +52,12 @@ class Translator {
           text = text.replace(this.parseFirstLetter(key), `<span class="highlight">${this.parseFirstLetter(value)}</span>`);
         }
       }
-
     } else {
       // british to american
 
       // normal translation
       for (let key in britishOnly) {
-        text = text.replace(key, `<span class="highlight">${britishOnly[key]}</span>`);
+        text = text.replace(regex(key), ` <span class="highlight">${britishOnly[key]}</span>`);
       }
 
       // spelling translation
