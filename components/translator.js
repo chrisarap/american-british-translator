@@ -21,7 +21,7 @@ class Translator {
 
   checkTranslate(text, locale) {
     let original = text.slice();
-    let regex = myVar => new RegExp("\\b[^-]"+ myVar +"\\b", 'gi');
+    let regex = myVar => new RegExp("\\b" + myVar + "\\b", 'gi');
 
     if (locale == 'american-to-british') {
       if (/\d\d*\:\d\d*/.test(text)) {
@@ -32,7 +32,7 @@ class Translator {
 
       // normal translation
       for (let key in americanOnly) {
-        text = text.replace(regex(key), ` <span class="highlight">${americanOnly[key]}</span>`);
+        text = text.replace(regex(key), `<span class="highlight">${americanOnly[key]}</span>`);
       }
 
       // spelling translation
@@ -55,11 +55,39 @@ class Translator {
     } else {
       // british to american
 
+      if (/\d\d*\.\d\d*/.test(text)) {
+        let hour = text.match(/\d\d*\.\d\d*/).join('');
+        let newHour = hour.replace('.', ':');
+        text = text.replace(hour, `<span class="highlight">${newHour}</span>`)
+      }
+      
+      let test = {};
+      let count = 1;
       // normal translation
       for (let key in britishOnly) {
-        text = text.replace(regex(key), ` <span class="highlight">${britishOnly[key]}</span>`);
+        
+        text = text.replace(regex(key), `<span class="highlight">${britishOnly[key]}</span>`);
+
+        // to fix double translate
+       if (test.hasOwnProperty(text)) {
+        count++;
+         test[text] = count;
+       } else {
+        Object.assign(test, {[text]: 1}) 
+        count = 1;
+       }
       }
 
+      // to fix double translate: use 1 repeat
+      for(let objKey in test) {
+        let value = test[objKey];
+
+        if (value == 1) {
+          text = objKey;
+        }
+        // console.log(objKey, value);
+      }
+   
       // spelling translation
       for (let key in americanToBritishSpelling) {
         text = text.replace(americanToBritishSpelling[key], `<span class="highlight">${key}</span>`);
@@ -70,7 +98,7 @@ class Translator {
         let key = americanToBritishTitles[value];
 
         let splitText = text.slice().split(' ');
-        splitText = text.slice().split('.');
+        // splitText = text.slice().split('.');
 
         if(splitText.indexOf(key) >= 0) {
           text = text.replace(key, `<span class="highlight">${this.parseFirstLetter(value)}</span>`);
