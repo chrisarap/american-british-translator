@@ -149,4 +149,32 @@ suite('Unit Tests', () => {
       'Tea time is usually around 4 or <span class="highlight">4:30</span>.'
     );
   });
+
+   test('test 21', () => {
+    assert.include(
+      callback('Mangoes are my favorite fruit.', amtobri).translation,
+      '<span class="highlight">favourite</span>'
+    );
+  });
+
+  test('test 22', () => {
+    assert.include(
+      callback('I ate yogurt for breakfast.', amtobri).translation,
+      '<span class="highlight">yoghurt</span>'
+    );
+  });
+
+  test('test 23', () => {
+    assert.include(
+      callback('We watched the footie match for a while.', britoam).translation,
+      '<span class="highlight">soccer</span>'
+    );
+  });
+
+  test('test 24', () => {
+    assert.include(
+      callback('Paracetamol takes up to an hour to work.', britoam).translation,
+      '<span class="highlight">Tylenol</span>'
+    );
+  });
 });
